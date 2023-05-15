@@ -1,3 +1,4 @@
+import math
 import random
 
 # char for each player first player 'R' second 'B'  Red and Blue in GUI
@@ -12,7 +13,7 @@ def evaluate_vertical(board, i, j):
     value = 0
     ai = 0
     comp = 0
-    empty = 0
+    emptyCell = 0
 
     for k in range(0, 4):
         if board[i + k][j] == Ai:
@@ -20,16 +21,18 @@ def evaluate_vertical(board, i, j):
         elif board[i + k][j] == computer:
             comp += 1
         else:
-            empty += 1
+            emptyCell += 1
 
     if ai == 4:
-        value = 60
-    elif ai == 3 and empty == 1:
-        value = 40
-    elif ai == 2 and empty == 2:
-        value = 20
-    elif comp == 3 and empty == 1:
-        value = -60
+        value = 100
+    elif comp == 4:
+        value = -100
+    elif ai == 3 and emptyCell == 1:
+        value = 4
+    elif ai == 2 and emptyCell == 2:
+        value = 2
+    elif comp == 3 and emptyCell == 1:
+        value = -20
 
     return value
 
@@ -38,24 +41,25 @@ def evaluate_horizontal(board, i, j):
     value = 0
     ai = 0
     comp = 0
-    empty = 0
+    emptyCell = 0
 
     for k in range(0, 4):
         if j + k < 7 and board[i][j + k] == Ai:
             ai += 1
-        elif j + k < 7 and i + k < 6 and board[i + k][j + k] == computer:
+        elif j + k < 7 and board[i][j + k] == computer:
             comp += 1
         else:
-            empty += 1
-
+            emptyCell += 1
     if ai == 4:
-        value = 60
-    elif ai == 3 and empty == 1:
-        value = 40
-    elif ai == 2 and empty == 2:
-        value = 20
-    elif comp == 3 and empty == 1:
-        value = -60
+        value = 100
+    elif comp == 4:
+        value = -100
+    elif ai == 3 and emptyCell == 1:
+        value = 4
+    elif ai == 2 and emptyCell == 2:
+        value = 2
+    elif comp == 3 and emptyCell == 1:
+        value = -20
 
     return value
 
@@ -64,7 +68,7 @@ def evaluate_LeftDiagonal(board, i, j):
     value = 0
     ai = 0
     comp = 0
-    empty = 0
+    emptyCell = 0
 
     for k in range(0, 4):
         if board[i + k][j + k] == Ai:
@@ -72,17 +76,17 @@ def evaluate_LeftDiagonal(board, i, j):
         elif board[i + k][j + k] == computer:
             comp += 1
         else:
-            empty += 1
-
+            emptyCell += 1
     if ai == 4:
-        value = 60
-    elif ai == 3 and empty == 1:
-        value = 40
-    elif ai == 2 and empty == 2:
-        value = 20
-    elif comp == 3 and empty == 1:
-        value = -60
-
+        value = 100
+    elif comp == 4:
+        value = -100
+    elif ai == 3 and emptyCell == 1:
+        value = 4
+    elif ai == 2 and emptyCell == 2:
+        value = 2
+    elif comp == 3 and emptyCell == 1:
+        value = -20
     return value
 
 
@@ -90,7 +94,7 @@ def evaluate_RightDiagonal(board, i, j):
     value = 0
     ai = 0
     comp = 0
-    empty = 0
+    emptyCell = 0
 
     for k in range(0, 4):
         if board[i + k][j - k] == Ai:
@@ -98,17 +102,17 @@ def evaluate_RightDiagonal(board, i, j):
         elif board[i + k][j - k] == computer:
             comp += 1
         else:
-            empty += 1
-
+            emptyCell += 1
     if ai == 4:
-        value = 60
-    elif ai == 3 and empty == 1:
-        value = 40
-    elif ai == 2 and empty == 2:
-        value = 20
-    elif comp == 3 and empty == 1:
-        value = -60
-
+        value = 100
+    elif comp == 4:
+        value = -100
+    elif ai == 3 and emptyCell == 1:
+        value = 4
+    elif ai == 2 and emptyCell == 2:
+        value = 2
+    elif comp == 3 and emptyCell == 1:
+        value = -20
     return value
 
 
@@ -137,8 +141,8 @@ def Board_IS_Empty(board):
     for i in range(0, 6):
         for j in range(0, 7):
             if board[i][j] == '':
-                return 1
-    return 0
+                return 0
+    return 1
 
 
 # check winner after each step in algorithm we call this functions Check_Winner 1-->computer win 2->>Ai Win  0 -> no
@@ -154,9 +158,9 @@ def Horizontal_Winner(board):
 
 
 def Vertical_Winner(board):
-    for i in range(0, 3):
+    for i in range(2, 3):
         for j in range(0, 7):
-            if board[i][j] == board[i + 1][j] == board[i + 2][i] == board[i + 3][j] == computer:
+            if board[i][j] == board[i + 1][j] == board[i + 2][j] == board[i + 3][j] == computer:
                 return 1
             if board[i][j] == board[i + 1][j] == board[i + 2][j] == board[i + 3][j] == Ai:
                 return 2
@@ -168,7 +172,7 @@ def Left_Diagonal_Winner(board):
         for j in range(0, 4):
             if board[i][j] == board[i + 1][j + 1] == board[i + 2][j + 2] == board[i + 3][j + 3] == computer:
                 return 1
-            if board[i][j] == board[i + 1][j + 1] == board[i + 2][j + 2] == board[i + 1][j + 3] == Ai:
+            if board[i][j] == board[i + 1][j + 1] == board[i + 2][j + 2] == board[i + 3][j + 3] == Ai:
                 return 2
     return 0
 
@@ -185,95 +189,155 @@ def Right_Diagonal_Winner(board):
 
 # use after each step
 def Check_Winner(board):
-
-    winner = Vertical_Winner(board)
-    if winner > 0:
-        return winner
-    winner = Horizontal_Winner(board)
-    if winner > 0:
-        return winner
-    winner = Left_Diagonal_Winner(board)
-    if winner > 0:
-        return winner
-    winner = Right_Diagonal_Winner(board)
-    if winner > 0:
-        return winner
-    return winner
+    win = Vertical_Winner(board)
+    if win > 0:
+        return win
+    win = Horizontal_Winner(board)
+    if win > 0:
+        return win
+    win = Left_Diagonal_Winner(board)
+    if win > 0:
+        return win
+    win = Right_Diagonal_Winner(board)
+    if win > 0:
+        return win
+    return win
 
 
 def GameOver(board):
-    winner = Check_Winner(board)
+    win = Check_Winner(board)
 
-    if winner > 0:
-        return winner
-    elif Board_IS_Empty(board):
-        return 0
+    if win > 0:
+        return win
 
     return -1
 
 
 def computer_turn(board, color):
-    empty = []
+    emptyCell = []
     for i in range(0, 6):
         for j in range(0, 7):
             if board[5 - i][j] == '' and (i == 0 or board[6 - i][j] != ''):
-                empty.append((5 - i, j))
+                emptyCell.append((5 - i, j))
 
-    selected = random.choice(empty)
+    selected = random.choice(emptyCell)
     board[selected[0]][selected[1]] = color
     return
 
 
 def minimax(board, depth, maxi):
-    if GameOver(board) != 0 or Board_IS_Empty(board) == 0:
-        return 0
+    #
+    # print("board = ")
+    # print_grid(board)
+    # print()
+    # print()
 
-    cur = evaluate(board)
+
+    isFinished = GameOver(board)
+    is_Empty = Board_IS_Empty(board)
+    if isFinished > 0:
+        if isFinished == 1:
+            return -math.inf, -1
+        else:
+            return math.inf, -1
+    if is_Empty == 1:
+        return 0, -1
 
     if depth == 4:
-        return cur
-
-    if not Board_IS_Empty(board):
-        return 0
+        return evaluate(board), -1
 
     if maxi:
-        best = - 1000000
+        best = - math.inf
+        best_col = -1
         for i in range(0, 6):
             for j in range(0, 7):
                 if board[5 - i][j] == '' and (i == 0 or board[6 - i][j] != ''):
                     board[5 - i][j] = Ai
-                    best = max(best, minimax(board, depth + 1, not maxi))
+                    temp_val, temp_col = minimax(board, depth + 1, not maxi)
+
+                    if temp_val > best:
+                        best_col = j
+                        best = temp_val
                     board[5 - i][j] = ''
 
-        return best
+        return best, best_col
 
     else:
-        best = 1000000
+        best = math.inf
+        best_col = -1
         for i in range(0, 6):
             for j in range(0, 7):
                 if board[5 - i][j] == '' and (i == 0 or board[6 - i][j] != ''):
                     board[5 - i][j] = computer
-                    best = min(best, minimax(board, depth + 1, not maxi))
+                    temp_val, temp_col = minimax(board, depth + 1, not maxi)
+                    if temp_val < best:
+                        best_col = j
+                        best = temp_val
                     board[5 - i][j] = ''
-        return best
+        return best, best_col
+
+
+def alpha_beta(board, depth, maxi, alpha, beta):
+    """print("board = ")
+    print_grid(board)
+    print()
+    print()"""
+
+    if depth == 7:
+        return evaluate(board), -1
+    isFinished = GameOver(board)
+    is_Empty = Board_IS_Empty(board)
+    if isFinished > 0:
+        if isFinished == 1:
+            return -math.inf, -1
+        else:
+            return math.inf, -1
+    if is_Empty == 1:
+        return 0, -1
+
+    if maxi:
+        best = - math.inf
+        best_col = -1
+        for i in range(0, 6):
+            for j in range(0, 7):
+                if board[5 - i][j] == '' and (i == 0 or board[6 - i][j] != ''):
+                    board[5 - i][j] = Ai
+                    temp_val, temp_col = alpha_beta(board, depth + 1, not maxi, alpha, beta)
+                    if temp_val > best:
+                        best_col = j
+                        best = temp_val
+                        alpha = best
+                    board[5 - i][j] = ''
+                if beta <= alpha:
+                    break
+
+        return best, best_col
+
+    else:
+        best = math.inf
+        best_col = -1
+        for i in range(0, 6):
+            for j in range(0, 7):
+                if board[5 - i][j] == '' and (i == 0 or board[6 - i][j] != ''):
+                    board[5 - i][j] = computer
+                    temp_val, temp_col = alpha_beta(board, depth + 1, not maxi, alpha, beta)
+                    if temp_val < best:
+                        best_col = j
+                        best = temp_val
+                        beta = best
+                    board[5 - i][j] = ''
+                if beta <= alpha:
+                    break
+        return best, best_col
 
 
 def findOptimalMove(board):
-    bestValue = -100000
-    bestMove = (-1, -1)
+    bestValue, bestMove_col = alpha_beta(board, 0, True, -math.inf, math.inf)
+    # bestValue, bestMove_col = minimax(board, 0, True)
     for i in range(0, 6):
-        for j in range(0, 7):
-
-            if board[5 - i][j] == '' and (i == 0 or board[6 - i][j] != ''):
-                board[5 - i][j] = Ai
-                tempMove = minimax(board, 0, False)
-                board[5 - i][j] = ''
-
-                if tempMove > bestValue:
-                    bestMove = (5 - i, j)
-                    bestValue = tempMove
-
-    b[bestMove[0]][bestMove[1]] = Ai
+        if board[5 - i][bestMove_col] == '':
+            b[5 - i][bestMove_col] = Ai
+            break
 
 
 def print_grid(grid):
@@ -286,6 +350,14 @@ def print_grid(grid):
         print()  # Move to the next line after printing each row
 
 
+def player(board):
+    col = int(input())
+    for i in range(0, 6):
+        if board[5 - i][col - 1] == '':
+            board[5 - i][col - 1] = computer
+            return
+
+
 b = [['', '', '', '', '', '', ''],
      ['', '', '', '', '', '', ''],
      ['', '', '', '', '', '', ''],
@@ -295,24 +367,29 @@ b = [['', '', '', '', '', '', ''],
 
 if __name__ == '__main__':
     for z in range(6 * 7):
-        if GameOver(b) != 0 or not Board_IS_Empty(b):
+        winner = GameOver(b)
+        empty = Board_IS_Empty(b)
+        if winner > 0 or empty == 1:
             if Check_Winner(b) == 1:
                 print("Computer is winner!!!")
             elif Check_Winner(b) == 2:
                 print("AI is winner :)")
-            elif Check_Winner(b) == 0:
+            elif Board_IS_Empty(b) == 1:
                 print("TIE")
             break
         print("Computer:")
-        computer_turn(b, computer)
+        # computer_turn(b, computer)
+        player(b)
         print_grid(b)
         print()
-        if GameOver(b) != 0 or not Board_IS_Empty(b):
+        winner = GameOver(b)
+        empty = Board_IS_Empty(b)
+        if winner > 0 or empty == 1:
             if Check_Winner(b) == 1:
                 print("Computer is winner!!!")
             elif Check_Winner(b) == 2:
                 print("AI is winner :)")
-            elif Check_Winner(b) == 0:
+            elif Board_IS_Empty(b) == 1:
                 print("TIE")
             break
         print("AI:")
