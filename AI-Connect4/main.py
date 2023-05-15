@@ -1,12 +1,12 @@
 import random
 
 # char for each player first player 'R' second 'B'  Red and Blue in GUI
-computer = ''
-Ai = ''
+computer = 'R'
+Ai = 'B'
 
 
 # evaluate used after last prediction (when reach max depth) we call this functions in evaluate find it below
-# return score like final cost to this path after reach depth 
+# return score like final cost to this path after reach depth
 
 def evaluate_vertical(board, i, j):
     value = 0
@@ -41,9 +41,9 @@ def evaluate_horizontal(board, i, j):
     empty = 0
 
     for k in range(0, 4):
-        if board[i][j + k] == Ai:
+        if j + k < 7 and board[i][j + k] == Ai:
             ai += 1
-        elif board[i + k][j + k] == computer:
+        elif j + k < 7 and i + k < 6 and board[i + k][j + k] == computer:
             comp += 1
         else:
             empty += 1
@@ -141,8 +141,8 @@ def Board_IS_Empty(board):
     return 0
 
 
-# check winner after each step in algorithm we call this functions Check_Winner 1-->computer win 2->>Ai Win  0 -> no 
-# winner 
+# check winner after each step in algorithm we call this functions Check_Winner 1-->computer win 2->>Ai Win  0 -> no
+# winner
 def Horizontal_Winner(board):
     for i in range(0, 6):
         for j in range(0, 4):
@@ -183,9 +183,9 @@ def Right_Diagonal_Winner(board):
     return 0
 
 
-# use after each step 
+# use after each step
 def Check_Winner(board):
-    winner = 0
+
     winner = Vertical_Winner(board)
     if winner > 0:
         return winner
@@ -214,23 +214,108 @@ def GameOver(board):
 
 def computer_turn(board, color):
     empty = []
-    for col in range(0, 7):
-        if board[5][col] == '':
-            empty.append(col)
+    for i in range(0, 6):
+        for j in range(0, 7):
+            if board[5 - i][j] == '' and (i == 0 or board[6 - i][j] != ''):
+                empty.append((5 - i, j))
 
     selected = random.choice(empty)
+    board[selected[0]][selected[1]] = color
+    return
 
+
+def minimax(board, depth, maxi):
+    if GameOver(board) != 0 or Board_IS_Empty(board) == 0:
+        return 0
+
+    cur = evaluate(board)
+
+    if depth == 4:
+        return cur
+
+    if not Board_IS_Empty(board):
+        return 0
+
+    if maxi:
+        best = - 1000000
+        for i in range(0, 6):
+            for j in range(0, 7):
+                if board[5 - i][j] == '' and (i == 0 or board[6 - i][j] != ''):
+                    board[5 - i][j] = Ai
+                    best = max(best, minimax(board, depth + 1, not maxi))
+                    board[5 - i][j] = ''
+
+        return best
+
+    else:
+        best = 1000000
+        for i in range(0, 6):
+            for j in range(0, 7):
+                if board[5 - i][j] == '' and (i == 0 or board[6 - i][j] != ''):
+                    board[5 - i][j] = computer
+                    best = min(best, minimax(board, depth + 1, not maxi))
+                    board[5 - i][j] = ''
+        return best
+
+
+def findOptimalMove(board):
+    bestValue = -100000
+    bestMove = (-1, -1)
     for i in range(0, 6):
-        if board[5 - i][selected] == '':
-            board[5 - i][selected] = color
-            return
+        for j in range(0, 7):
+
+            if board[5 - i][j] == '' and (i == 0 or board[6 - i][j] != ''):
+                board[5 - i][j] = Ai
+                tempMove = minimax(board, 0, False)
+                board[5 - i][j] = ''
+
+                if tempMove > bestValue:
+                    bestMove = (5 - i, j)
+                    bestValue = tempMove
+
+    b[bestMove[0]][bestMove[1]] = Ai
 
 
-b = [
-    ['', '', '', '', '', '', ''],
-    ['', '', '', '', '', '', ''],
-    ['', '', '', '', '', '', ''],
-    ['', '', '', '', '', '', ''],
-    ['', '', '', '', '', '', ''],
-    ['', '', '', '', '', '', ''],
-]
+def print_grid(grid):
+    for row in grid:
+        for element in row:
+            if element == '':
+                print('_', end=' ')
+            else:
+                print(element, end=' ')
+        print()  # Move to the next line after printing each row
+
+
+b = [['', '', '', '', '', '', ''],
+     ['', '', '', '', '', '', ''],
+     ['', '', '', '', '', '', ''],
+     ['', '', '', '', '', '', ''],
+     ['', '', '', '', '', '', ''],
+     ['', '', '', '', '', '', '']]
+
+if __name__ == '__main__':
+    for z in range(6 * 7):
+        if GameOver(b) != 0 or not Board_IS_Empty(b):
+            if Check_Winner(b) == 1:
+                print("Computer is winner!!!")
+            elif Check_Winner(b) == 2:
+                print("AI is winner :)")
+            elif Check_Winner(b) == 0:
+                print("TIE")
+            break
+        print("Computer:")
+        computer_turn(b, computer)
+        print_grid(b)
+        print()
+        if GameOver(b) != 0 or not Board_IS_Empty(b):
+            if Check_Winner(b) == 1:
+                print("Computer is winner!!!")
+            elif Check_Winner(b) == 2:
+                print("AI is winner :)")
+            elif Check_Winner(b) == 0:
+                print("TIE")
+            break
+        print("AI:")
+        findOptimalMove(b)
+        print_grid(b)
+        print()
